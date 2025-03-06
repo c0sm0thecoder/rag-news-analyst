@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: ankane/pgvector:latest
+    container_name: rag-postgres
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+volumes:
+  data:
