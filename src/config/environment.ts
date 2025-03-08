@@ -5,6 +5,7 @@ export interface EnvironmentVariables {
 
     // Pinecone
     PINECONE_API_KEY: string;
+    PINECONE_INDEX_NAME?: string;
 
     // Kafka
     KAFKA_CLIENT_ID: string;
@@ -31,6 +32,7 @@ export function getEnvironmentVariables(): EnvironmentVariables {
         NODE_ENV: process.env.APP_ENV || "development",
 
         PINECONE_API_KEY: process.env.PINECONE_API_KEY || "",
+        PINECONE_INDEX_NAME: process.env.PINECONE_INDEX_NAME || "",
 
         KAFKA_CLIENT_ID: process.env.KAFKA_CLIENT_ID || "",
         KAFKA_BROKER: process.env.KAFKA_BROKER || "",
