@@ -1,11 +1,10 @@
 import Mercury from "@postlight/mercury-parser";
 import { NewsMessage } from "../models/message";
 import { cleanContent } from "./content-cleaner.";
+import { storeArticle } from "../rag/vectorizer";
 
 export async function processNewLink(newsMessage: NewsMessage): Promise<void> {
     try {
-        const rawContent = extractContent(newsMessage.url);
-
         const extracted = await extractContent(newsMessage.url);
 
         const cleaned = await cleanContent(
@@ -14,7 +13,7 @@ export async function processNewLink(newsMessage: NewsMessage): Promise<void> {
             newsMessage.source
         );
 
-        await storeArticle(cleanedArticle);
+        await storeArticle(cleaned);
     } catch (err) {
         throw err;
     }
