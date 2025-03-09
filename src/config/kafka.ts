@@ -1,5 +1,6 @@
 import { Consumer, Kafka, KafkaConfig } from "kafkajs";
 import { getEnvironmentVariables } from "./environment";
+import { logger } from "../utils/logger";
 
 export function createKafkaClient(): Kafka {
     const env = getEnvironmentVariables();
@@ -24,3 +25,31 @@ export async function createKafkaConsumer(groupId: string): Promise<Consumer> {
     await consumer.connect();
     return consumer;
 }
+
+export async function createKafkaTopics(kafka: Kafka): Promise<void> {
+    const env = getEnvironmentVariables();
+    const admin = kafka.admin();
+    
+    try {
+      await admin.connect();
+      logger.info("Connected to Kafka admin client");
+      
+      const existingTopics = await admin.listTopics();
+      logger.info(`Existing topics: ${existingTopics}`);
+      
+      if (!existingTopics.includes(env.KAFKA_TOPIC_NAME)) {
+        await admin.createTopics({
+          topics: [{
+            topic: env.KAFKA_TOPIC_NAME,
+            numPartitions: 1,
+            replicationFactor: 1
+          }]
+        });
+        logger.info(`Created topic: ${env.KAFKA_TOPIC_NAME}`);
+      }
+    } catch (error) {
+      logger.error(`Failed to create Kafka topics: ${error}`);
+    } finally {
+      await admin.disconnect();
+    }
+  }

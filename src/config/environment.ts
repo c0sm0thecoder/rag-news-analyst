@@ -31,7 +31,7 @@ export function getEnvironmentVariables(): EnvironmentVariables {
         PORT: process.env.APP_PORT || "4000",
         NODE_ENV: process.env.APP_ENV || "development",
 
-        PINECONE_API_KEY: process.env.PINECONE_API_KEY || "",
+        PINECONE_API_KEY: process.env.PINECONE_API_KEY!,
         PINECONE_INDEX_NAME: process.env.PINECONE_INDEX_NAME || "",
 
         KAFKA_CLIENT_ID: process.env.KAFKA_CLIENT_ID || "",

@@ -14,42 +14,44 @@ export async function upsertVectors(
     const client = getPineconeClient();
     const index = client.index(env.PINECONE_INDEX_NAME);
 
-    return await index.namespace('ns1').upsert(vectors);
+    return await index.namespace("ns1").upsert(vectors);
 }
 
 export async function queryVectors(
     vector: number[],
     topK: number = 5
-) {
-    if (checkUrlExists) {
-        logger.info(`URL exists`);
-        return;
-    }
-    const client = getPineconeClient();
-    const index = client.index(env.PINECONE_INDEX_NAME);
-
-    return await index.query({
-        topK,
-        vector,
-        includeMetadata: true,
-    });
-}
-
-export async function checkUrlExists(url: string): Promise<boolean> {
-    const client = getPineconeClient();
-    const index = client.index(getEnvironmentVariables().PINECONE_INDEX_NAME);
-
-    const articleId = Buffer.from(url).toString('base64');
-    
-    const idToCheck = `${articleId}_chunk_0`;
-    
+): Promise<any> {
     try {
-        const response = await index.fetch([idToCheck]);
-        if (response.records && idToCheck in response.records) {
-            return true;
+        const client = getPineconeClient();
+        const env = getEnvironmentVariables();
+
+        if (!env.PINECONE_INDEX_NAME) {
+            throw new Error(
+                "PINECONE_INDEX_NAME environment variable is not set"
+            );
         }
+
+        const index = client.index(env.PINECONE_INDEX_NAME);
+        logger.info(`Querying Pinecone index: ${env.PINECONE_INDEX_NAME}`);
+
+        const queryResponse = await index.namespace("ns1").query({
+            vector,
+            topK,
+            includeMetadata: true,
+        });
+
+        if (!queryResponse || !queryResponse.matches) {
+            logger.warn(
+                `Unexpected Pinecone response format: ${JSON.stringify(
+                    queryResponse
+                )}`
+            );
+            return { matches: [] };
+        }
+
+        return queryResponse;
     } catch (error) {
-        logger.error(`Error checking if URL exists: ${error}`);
-        return false;
+        logger.error(`Error querying vectors: ${error}`);
+        return { matches: [] };
     }
 }

@@ -3,8 +3,7 @@ import { getEnvironmentVariables } from "../config/environment";
 import { createKafkaConsumer } from "../config/kafka";
 import { logger } from "../utils/logger";
 import { NewsMessage } from "../models/message";
-import { cleanContent } from "./content-cleaner.";
-import { extractContent, processNewLink } from "./content-extractor";
+import { processNewLink } from "./content-extractor";
 
 let consumer: Consumer;
 
@@ -60,7 +59,6 @@ export async function setUpKafkaConsumer(): Promise<void> {
         throw new Error(`Failed to set up Kafka consumer: ${err}`);
     }
 
-    // Error handling
     const errorTypes = ["unhandledRejection", "uncaughtException"];
     const signalTraps = ["SIGTERM", "SIGINT", "SIGUSR2"];
 
