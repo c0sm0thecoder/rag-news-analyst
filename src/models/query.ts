@@ -2,9 +2,9 @@ export interface QueryInput {
     query: string;
 }
 
-export interface QueryResponse {
+export interface QueryResult {
     answer: string;
-    resources: Source[];
+    sources: Source[];
 }
 
 export interface Source {

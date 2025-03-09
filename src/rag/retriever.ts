@@ -2,7 +2,7 @@ import { generateEmbeddings } from "../config/llm";
 import { queryVectors } from "../db/pineconeClient";
 import { logger } from "../utils/logger";
 
-export interface QueryResult {
+export interface QueryResponse {
     id: string;
     metadata: any;
     distance: number;
@@ -11,14 +11,14 @@ export interface QueryResult {
 export async function retrieveRelevantChunks(
     query: string,
     topK: number = 5
-): Promise<QueryResult[]> {
+): Promise<QueryResponse[]> {
     try {
         logger.info(`Retrieving relevant chunks for query: ${query}`);
 
         const embeddedQuery = await generateEmbeddings(query);
         const response = await queryVectors(embeddedQuery, topK);
 
-        const results: QueryResult[] = response.matches.map((match) => ({
+        const results: QueryResponse[] = response.matches.map((match) => ({
             id: match.id,
             metadata: match.metadata,
             distance: 1 - match.score,
